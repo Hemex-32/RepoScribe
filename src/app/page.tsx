@@ -1,13 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { Github, FileText, Layout, Send, Loader2 } from 'lucide-react';
+import { Github, FileText, Layout, Send, Loader2, Copy, Download, Check, ExternalLink } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import Mermaid from '@/components/Mermaid';
 
 export default function Home() {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState('');
   const [result, setResult] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'readme' | 'architecture'>('readme');
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,90 +42,169 @@ export default function Home() {
     }
   };
 
+  const handleCopy = () => {
+    if (!result) return;
+    navigator.clipboard.writeText(result.readme);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  const handleDownload = () => {
+    if (!result) return;
+    const blob = new Blob([result.readme], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'README.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-6 bg-background text-foreground">
-      <div className="max-w-3xl w-100 space-y-8 text-center">
+    <main className="min-h-screen p-6 bg-background text-foreground flex flex-col items-center">
+      <div className={`w-full max-w-5xl space-y-8 transition-all duration-1000 ${result ? 'mt-8' : 'mt-20 flex flex-col items-center text-center'}`}>
         {/* Header */}
-        <div className="space-y-4">
-          <div className="flex justify-center">
+        <div className={`space-y-4 ${result ? 'text-left' : 'text-center'}`}>
+          <div className={`flex ${result ? 'justify-start' : 'justify-center'}`}>
             <div className="p-3 bg-accent/10 rounded-2xl">
-              <FileText className="w-12 h-12 text-accent" />
+              <FileText className="w-10 h-10 text-accent" />
             </div>
           </div>
-          <h1 className="text-5xl font-extrabold tracking-tight">
+          <h1 className="text-4xl font-extrabold tracking-tight">
             Docu<span className="text-accent">Gen</span>
           </h1>
-          <p className="text-xl text-foreground/60 max-w-lg mx-auto">
-            Transform your GitHub repository into professional documentation and architecture diagrams in seconds.
-          </p>
+          {!result && (
+            <p className="text-lg text-foreground/60 max-w-lg mx-auto">
+              Transform your GitHub repository into professional documentation and architecture diagrams in seconds.
+            </p>
+          )}
         </div>
 
         {/* Input Form */}
-        <form onSubmit={handleGenerate} className="relative group">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Github className="h-5 w-5 text-foreground/40 group-focus-within:text-accent transition-colors" />
-          </div>
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://github.com/username/repo"
-            className="block w-full pl-12 pr-32 py-4 bg-foreground/5 border border-border rounded-2xl focus:ring-2 focus:ring-accent/50 focus:border-accent outline-none transition-all text-lg"
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !url}
-            className="absolute inset-y-2 right-2 px-6 bg-accent text-background font-bold rounded-xl hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
-          >
-            {isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <>
-                <span>Generate</span>
-                <Send className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </form>
+        <div className={`w-full ${result ? 'max-w-xl' : 'max-w-2xl'}`}>
+          <form onSubmit={handleGenerate} className="relative group">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Github className="h-5 w-5 text-foreground/40 group-focus-within:text-accent transition-colors" />
+            </div>
+            <input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://github.com/username/repo"
+              className="block w-full pl-12 pr-32 py-3 bg-foreground/5 border border-border rounded-xl focus:ring-2 focus:ring-accent/50 focus:border-accent outline-none transition-all text-base"
+            />
+            <button
+              type="submit"
+              disabled={isLoading || !url}
+              className="absolute inset-y-1.5 right-1.5 px-5 bg-accent text-background font-bold rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-sm"
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <span>Generate</span>
+                  <Send className="w-3 h-3" />
+                </>
+              )}
+            </button>
+          </form>
 
-        {/* Status & Results */}
-        {(status || result) && (
-          <div className="space-y-4 animate-in">
-            {status && (
-              <p className={`text-sm ${status.startsWith('Error') ? 'text-red-400' : 'text-accent'}`}>
-                {status}
-              </p>
-            )}
-            {result && (
-              <div className="p-4 bg-accent/5 border border-accent/20 rounded-xl text-left">
-                <p className="font-bold text-accent">Success!</p>
-                <p className="text-sm text-foreground/70">
-                  Fetched <span className="text-foreground font-mono">{result.fileCount}</span> files from <span className="text-foreground font-mono">{result.owner}/{result.repo}</span>.
-                </p>
+          {status && !result && (
+            <p className={`mt-4 text-sm ${status.startsWith('Error') ? 'text-red-400' : 'text-accent animate-pulse'}`}>
+              {status}
+            </p>
+          )}
+        </div>
+
+        {/* Results Area */}
+        {result && (
+          <div className="w-full space-y-6 animate-in">
+            {/* Control Bar */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-foreground/5 border border-border rounded-2xl">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveTab('readme')}
+                  className={`px-4 py-2 rounded-lg font-bold transition-all ${activeTab === 'readme' ? 'bg-accent text-background' : 'text-foreground/60 hover:text-foreground'}`}
+                >
+                  README.md
+                </button>
+                <button
+                  onClick={() => setActiveTab('architecture')}
+                  className={`px-4 py-2 rounded-lg font-bold transition-all ${activeTab === 'architecture' ? 'bg-accent text-background' : 'text-foreground/60 hover:text-foreground'}`}
+                >
+                  Architecture
+                </button>
               </div>
-            )}
+              
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCopy}
+                  className="p-2 hover:bg-foreground/10 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
+                  title="Copy to clipboard"
+                >
+                  {isCopied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                  <span>{isCopied ? 'Copied' : 'Copy'}</span>
+                </button>
+                <button
+                  onClick={handleDownload}
+                  className="p-2 hover:bg-foreground/10 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
+                  title="Download .md"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download</span>
+                </button>
+                <div className="w-px h-6 bg-border mx-2" />
+                <a
+                  href={`https://github.com/${result.owner}/${result.repo}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 hover:bg-foreground/10 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium text-accent"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>Source Code</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Content Display */}
+            <div className="min-h-[500px] p-8 bg-foreground/5 border border-border rounded-2xl overflow-auto shadow-2xl">
+              {activeTab === 'readme' ? (
+                <div className="prose prose-invert max-w-none prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10 prose-accent">
+                  <ReactMarkdown>{result.readme}</ReactMarkdown>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-bold text-accent mb-4">System Architecture</h3>
+                  <Mermaid chart={result.architecture} />
+                </div>
+              )}
+            </div>
           </div>
         )}
 
-        {/* Features Preview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-8">
-          <div className="p-6 bg-foreground/5 border border-border rounded-2xl text-left space-y-3">
-            <FileText className="w-6 h-6 text-accent" />
-            <h3 className="font-bold text-lg">Perfect READMEs</h3>
-            <p className="text-sm text-foreground/60">Comprehensive project overviews, installation guides, and usage examples generated from your source code.</p>
+        {/* Initial Features Preview */}
+        {!result && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-8 w-full max-w-2xl">
+            <div className="p-6 bg-foreground/5 border border-border rounded-2xl text-left space-y-3">
+              <FileText className="w-6 h-6 text-accent" />
+              <h3 className="font-bold text-lg">Perfect READMEs</h3>
+              <p className="text-sm text-foreground/60">Comprehensive project overviews, installation guides, and usage examples generated from your source code.</p>
+            </div>
+            <div className="p-6 bg-foreground/5 border border-border rounded-2xl text-left space-y-3">
+              <Layout className="w-6 h-6 text-accent" />
+              <h3 className="font-bold text-lg">Architecture Diagrams</h3>
+              <p className="text-sm text-foreground/60">Visual Mermaid.js diagrams that map out your system components and their relationships automatically.</p>
+            </div>
           </div>
-          <div className="p-6 bg-foreground/5 border border-border rounded-2xl text-left space-y-3">
-            <Layout className="w-6 h-6 text-accent" />
-            <h3 className="font-bold text-lg">Architecture Diagrams</h3>
-            <p className="text-sm text-foreground/60">Visual Mermaid.js diagrams that map out your system components and their relationships automatically.</p>
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* Footer */}
-      <footer className="mt-20 text-foreground/40 text-sm">
+      <footer className="mt-auto py-12 text-foreground/40 text-sm">
         Built for developers who value their time.
       </footer>
     </main>
   );
 }
+
