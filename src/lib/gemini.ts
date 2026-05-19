@@ -4,11 +4,12 @@ import { RepoFile } from './github';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function generateDocumentation(files: RepoFile[]) {
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error("GEMINI_API_KEY is missing in environment variables.");
+  }
+
   const model = genAI.getGenerativeModel({ 
     model: "gemini-1.5-flash",
-    generationConfig: {
-      responseMimeType: "application/json",
-    }
   });
 
   const codebaseContext = files
@@ -27,7 +28,12 @@ export async function generateDocumentation(files: RepoFile[]) {
     ${codebaseContext}
   `;
 
-  const result = await model.generateContent(prompt);
+  const result = await model.generateContent({
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    generationConfig: {
+      responseMimeType: "application/json",
+    },
+  });
   const response = await result.response;
   const text = response.text();
   
