@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseGithubUrl, fetchRepoContents } from '@/lib/github';
-import { generateDocumentation } from '@/lib/openai';
+import { generateDocumentation } from '@/lib/gemini';
 
 export async function POST(req: NextRequest) {
   try {
