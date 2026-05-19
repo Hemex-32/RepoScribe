@@ -68,16 +68,16 @@ export default function Home() {
         {/* Header */}
         <div className={`space-y-4 ${result ? 'text-left' : 'text-center'}`}>
           <div className={`flex ${result ? 'justify-start' : 'justify-center'}`}>
-            <div className="p-3 bg-accent/10 rounded-2xl">
-              <FileText className="w-10 h-10 text-accent" />
+            <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
+              <FileText className="w-10 h-10 text-white" />
             </div>
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight">
-            Docu<span className="text-accent">Gen</span>
+          <h1 className="text-4xl font-black tracking-tighter uppercase italic">
+            Repo<span className="text-foreground/40 font-light not-italic">Scribe</span>
           </h1>
           {!result && (
-            <p className="text-lg text-foreground/60 max-w-lg mx-auto">
-              Transform your GitHub repository into professional documentation and architecture diagrams in seconds.
+            <p className="text-lg text-white/50 max-w-lg mx-auto leading-relaxed">
+              AI-driven codebase documentation and visual architecture mapping.
             </p>
           )}
         </div>
@@ -86,25 +86,25 @@ export default function Home() {
         <div className={`w-full ${result ? 'max-w-xl' : 'max-w-2xl'}`}>
           <form onSubmit={handleGenerate} className="relative group">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Github className="h-5 w-5 text-foreground/40 group-focus-within:text-accent transition-colors" />
+              <Github className="h-5 w-5 text-white/20 group-focus-within:text-white transition-colors" />
             </div>
             <input
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://github.com/username/repo"
-              className="block w-full pl-12 pr-32 py-3 bg-foreground/5 border border-border rounded-xl focus:ring-2 focus:ring-accent/50 focus:border-accent outline-none transition-all text-base"
+              placeholder="github.com/username/repo"
+              className="block w-full pl-12 pr-32 py-4 bg-white/[0.03] border border-white/10 rounded-xl focus:border-white/40 focus:bg-white/[0.05] outline-none transition-all text-base placeholder:text-white/20"
             />
             <button
               type="submit"
               disabled={isLoading || !url}
-              className="absolute inset-y-1.5 right-1.5 px-5 bg-accent text-background font-bold rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-sm"
+              className="absolute inset-y-2 right-2 px-6 bg-white text-black font-black rounded-lg hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-xs uppercase tracking-widest"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <span>Generate</span>
+                  <span>Scribe</span>
                   <Send className="w-3 h-3" />
                 </>
               )}
@@ -112,7 +112,7 @@ export default function Home() {
           </form>
 
           {status && !result && (
-            <p className={`mt-4 text-sm ${status.startsWith('Error') ? 'text-red-400' : 'text-accent animate-pulse'}`}>
+            <p className={`mt-6 text-[10px] uppercase tracking-[0.2em] font-bold ${status.startsWith('Error') ? 'text-red-500' : 'text-white/40 animate-pulse'}`}>
               {status}
             </p>
           )}
@@ -122,61 +122,61 @@ export default function Home() {
         {result && (
           <div className="w-full space-y-6 animate-in">
             {/* Control Bar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-foreground/5 border border-border rounded-2xl">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab('readme')}
-                  className={`px-4 py-2 rounded-lg font-bold transition-all ${activeTab === 'readme' ? 'bg-accent text-background' : 'text-foreground/60 hover:text-foreground'}`}
+                  className={`px-6 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'readme' ? 'bg-white text-black' : 'text-white/40 hover:text-white'}`}
                 >
-                  README.md
+                  README
                 </button>
                 <button
                   onClick={() => setActiveTab('architecture')}
-                  className={`px-4 py-2 rounded-lg font-bold transition-all ${activeTab === 'architecture' ? 'bg-accent text-background' : 'text-foreground/60 hover:text-foreground'}`}
+                  className={`px-6 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'architecture' ? 'bg-white text-black' : 'text-white/40 hover:text-white'}`}
                 >
                   Architecture
                 </button>
               </div>
               
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <button
                   onClick={handleCopy}
-                  className="p-2 hover:bg-foreground/10 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors flex items-center gap-2 text-[10px] uppercase tracking-tighter font-bold text-white/60"
                   title="Copy to clipboard"
                 >
-                  {isCopied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                  {isCopied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4" />}
                   <span>{isCopied ? 'Copied' : 'Copy'}</span>
                 </button>
                 <button
                   onClick={handleDownload}
-                  className="p-2 hover:bg-foreground/10 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors flex items-center gap-2 text-[10px] uppercase tracking-tighter font-bold text-white/60"
                   title="Download .md"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Download</span>
+                  <span>Export</span>
                 </button>
-                <div className="w-px h-6 bg-border mx-2" />
+                <div className="w-px h-4 bg-white/10 mx-1" />
                 <a
                   href={`https://github.com/${result.owner}/${result.repo}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 hover:bg-foreground/10 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium text-accent"
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors flex items-center gap-2 text-[10px] uppercase tracking-tighter font-bold text-white"
                 >
                   <ExternalLink className="w-4 h-4" />
-                  <span>Source Code</span>
+                  <span>Repo</span>
                 </a>
               </div>
             </div>
 
             {/* Content Display */}
-            <div className="min-h-[500px] p-8 bg-foreground/5 border border-border rounded-2xl overflow-auto shadow-2xl">
+            <div className="min-h-[600px] p-10 bg-white/[0.02] border border-white/5 rounded-3xl overflow-auto shadow-2xl">
               {activeTab === 'readme' ? (
-                <div className="prose prose-invert max-w-none prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10 prose-accent">
+                <div className="prose prose-invert max-w-none prose-pre:bg-white/[0.03] prose-pre:border prose-pre:border-white/5 prose-headings:font-black prose-headings:tracking-tighter prose-headings:uppercase prose-p:text-white/70 prose-accent">
                   <ReactMarkdown>{result.readme}</ReactMarkdown>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-accent mb-4">System Architecture</h3>
+                <div className="space-y-6">
+                  <h3 className="text-xs font-black uppercase tracking-[0.3em] text-white/30 mb-8">System Architecture Map</h3>
                   <Mermaid chart={result.architecture} />
                 </div>
               )}
@@ -186,16 +186,16 @@ export default function Home() {
 
         {/* Initial Features Preview */}
         {!result && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-8 w-full max-w-2xl">
-            <div className="p-6 bg-foreground/5 border border-border rounded-2xl text-left space-y-3">
-              <FileText className="w-6 h-6 text-accent" />
-              <h3 className="font-bold text-lg">Perfect READMEs</h3>
-              <p className="text-sm text-foreground/60">Comprehensive project overviews, installation guides, and usage examples generated from your source code.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-12 w-full max-w-3xl">
+            <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl text-left space-y-4 hover:border-white/20 transition-all group">
+              <FileText className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+              <h3 className="font-black text-xs uppercase tracking-widest">Documentation</h3>
+              <p className="text-sm text-white/40 leading-relaxed">Comprehensive technical READMEs synthesized from your project structure and source logic.</p>
             </div>
-            <div className="p-6 bg-foreground/5 border border-border rounded-2xl text-left space-y-3">
-              <Layout className="w-6 h-6 text-accent" />
-              <h3 className="font-bold text-lg">Architecture Diagrams</h3>
-              <p className="text-sm text-foreground/60">Visual Mermaid.js diagrams that map out your system components and their relationships automatically.</p>
+            <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl text-left space-y-4 hover:border-white/20 transition-all group">
+              <Layout className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+              <h3 className="font-black text-xs uppercase tracking-widest">Architecture</h3>
+              <p className="text-sm text-white/40 leading-relaxed">Live visual mapping of component dependencies and data flow using Mermaid.js integration.</p>
             </div>
           </div>
         )}
