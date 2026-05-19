@@ -14,7 +14,7 @@ export default function Home() {
     if (!url) return;
     
     setIsLoading(true);
-    setStatus('Fetching repository contents...');
+    setStatus('Fetching codebase and generating documentation with AI...');
     setResult(null);
 
     try {
@@ -29,7 +29,7 @@ export default function Home() {
       if (!response.ok) throw new Error(data.error || 'Failed to generate');
 
       setResult(data);
-      setStatus('Codebase analyzed! (Ready for Phase 3)');
+      setStatus('Documentation generated successfully!');
     } catch (err: any) {
       console.error(err);
       setStatus(`Error: ${err.message}`);
