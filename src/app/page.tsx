@@ -21,6 +21,13 @@ export default function Home() {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const logEndRef = useRef<HTMLDivElement>(null);
 
+  const resetState = () => {
+    setResult(null);
+    setUrl('');
+    setStatus('');
+    setLogs([]);
+  };
+
   const addLog = (message: string) => {
     setLogs(prev => [...prev.slice(-4), `> ${message}`]);
   };
@@ -106,6 +113,26 @@ export default function Home() {
     <main className="min-h-screen mesh-gradient text-foreground flex flex-col items-center px-4 md:px-6 overflow-x-hidden pb-20">
       <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-silver/5 blur-[120px] rounded-full pointer-events-none -z-10" />
       <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-obsidian/20 blur-[120px] rounded-full pointer-events-none -z-10" />
+
+      {/* Navigation - Top Left */}
+      <AnimatePresence>
+        {result && (
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="fixed top-8 left-8 z-50"
+          >
+            <button 
+              onClick={resetState}
+              className="group flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300 backdrop-blur-md"
+            >
+              <ChevronDown className="w-4 h-4 rotate-90 text-white/40 group-hover:text-white transition-colors" />
+              <span className="text-[10px] uppercase tracking-[0.2em] font-black text-white/40 group-hover:text-white transition-colors">Home</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className={`w-full max-w-5xl space-y-12 transition-all duration-1000 ${result ? 'mt-8' : 'mt-24 flex flex-col items-center text-center'}`}>
         
