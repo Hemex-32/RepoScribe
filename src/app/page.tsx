@@ -98,7 +98,7 @@ export default function Home() {
           <div className="space-y-2">
             <motion.h1 
               layout
-              className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-none"
+              className="text-5xl md:text-8xl font-black tracking-tighter uppercase italic leading-none font-serif"
             >
               <span className="silver-text">Repo</span>
               <span className="text-white/20 font-light not-italic">Scribe</span>
@@ -109,7 +109,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="text-lg md:text-xl text-white/40 max-w-xl mx-auto leading-relaxed font-light"
+                  className="text-lg md:text-xl text-white/40 max-w-xl mx-auto leading-relaxed font-light font-sans"
                 >
                   Elevating source code into <span className="text-white font-medium">professional documentation</span> and visual architecture maps.
                 </motion.p>
@@ -277,9 +277,9 @@ export default function Home() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="prose prose-invert max-w-none 
+                        className="prose prose-invert max-w-none font-sans
                           prose-pre:bg-black/50 prose-pre:backdrop-blur-md prose-pre:border prose-pre:border-white/5 prose-pre:rounded-2xl
-                          prose-headings:silver-text prose-headings:font-black prose-headings:tracking-tighter prose-headings:uppercase
+                          prose-headings:silver-text prose-headings:font-black prose-headings:tracking-tighter prose-headings:uppercase prose-headings:font-serif
                           prose-p:text-white/60 prose-p:leading-relaxed prose-strong:text-white
                           prose-a:text-silver hover:prose-a:text-white transition-colors"
                       >
