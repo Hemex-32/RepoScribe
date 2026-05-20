@@ -101,7 +101,7 @@ export default function Home() {
               className="text-5xl md:text-7xl font-bold tracking-tight uppercase leading-none font-sans"
             >
               <span className="silver-text">Repo</span>
-              <span className="text-white/10 font-thin">Scribe</span>
+              <span className="text-white/10 font-light">Scribe</span>
             </motion.h1>
             <AnimatePresence>
               {!result && (
