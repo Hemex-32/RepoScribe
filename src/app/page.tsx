@@ -95,13 +95,13 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="space-y-2">
+          <div className="space-y-4">
             <motion.h1 
               layout
-              className="text-5xl md:text-8xl font-black tracking-tighter uppercase italic leading-none font-serif"
+              className="text-4xl md:text-6xl font-extralight tracking-[0.5em] uppercase leading-none font-sans"
             >
-              <span className="silver-text">Repo</span>
-              <span className="text-white/20 font-light not-italic">Scribe</span>
+              <span className="silver-text font-medium tracking-[0.4em]">Repo</span>
+              <span className="text-white/10">Scribe</span>
             </motion.h1>
             <AnimatePresence>
               {!result && (
@@ -109,9 +109,9 @@ export default function Home() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="text-lg md:text-xl text-white/40 max-w-xl mx-auto leading-relaxed font-light font-sans"
+                  className="text-xs md:text-sm text-white/20 max-w-xl mx-auto leading-relaxed uppercase tracking-[0.2em] font-light font-sans"
                 >
-                  Elevating source code into <span className="text-white font-medium">professional documentation</span> and visual architecture maps.
+                  Architectural Intelligence <span className="text-white/40">&bull;</span> Automated Documentation
                 </motion.p>
               )}
             </AnimatePresence>
