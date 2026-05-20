@@ -110,7 +110,7 @@ export default function Home() {
       <div className={`w-full max-w-5xl space-y-12 transition-all duration-1000 ${result ? 'mt-8' : 'mt-24 flex flex-col items-center text-center'}`}>
         
         {/* Header Section */}
-        <motion.div layout className={`space-y-6 ${result ? 'text-left w-full' : 'text-center'}`}>
+        <div className={`space-y-6 ${result ? 'text-left w-full' : 'text-center'}`}>
           <div className={`flex ${result ? 'justify-start' : 'justify-center'}`}>
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-silver/20 to-transparent blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
@@ -121,10 +121,10 @@ export default function Home() {
           </div>
           
           <div className="space-y-4">
-            <motion.h1 layout className="text-5xl md:text-7xl font-bold tracking-tight uppercase leading-none font-sans">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight uppercase leading-none font-sans">
               <span className="silver-text">Repo</span>
               <span className="text-white/10 font-light">Scribe</span>
-            </motion.h1>
+            </h1>
             <AnimatePresence>
               {!result && (
                 <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
@@ -134,12 +134,12 @@ export default function Home() {
               )}
             </AnimatePresence>
           </div>
-        </motion.div>
+        </div>
 
         {/* Input & Terminal Section */}
         <div className={`w-full flex flex-col gap-6 transition-all duration-700 ${result ? 'max-w-4xl' : 'max-w-2xl'}`}>
-          <div className="flex flex-col md:flex-row gap-4 w-full">
-            <form onSubmit={handleGenerate} className="relative group flex-1">
+          <div className="flex flex-col md:flex-row gap-4 w-full items-start">
+            <form onSubmit={handleGenerate} className="relative group w-full flex-1">
               <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none z-20">
                 <Github className="h-5 w-5 text-white/20 group-focus-within:text-white transition-colors" />
               </div>
@@ -148,7 +148,7 @@ export default function Home() {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="github.com/username/repository"
-                className="block w-full pl-14 pr-36 py-5 bg-white/[0.02] border border-white/10 rounded-2xl focus:border-white/30 focus:bg-white/[0.04] outline-none transition-all text-base placeholder:text-white/10 glass-panel relative z-10"
+                className="block w-full pl-14 pr-40 py-5 bg-white/[0.02] border border-white/10 rounded-2xl focus:border-white/30 focus:bg-white/[0.04] outline-none transition-all text-base placeholder:text-white/10 glass-panel relative z-10"
               />
               <AnimatePresence>
                 {isLoading && (
@@ -159,7 +159,7 @@ export default function Home() {
                 )}
               </AnimatePresence>
               <button type="submit" disabled={isLoading || !url}
-                className="absolute inset-y-2.5 right-2.5 px-8 bg-silver text-black font-black rounded-xl hover:bg-white disabled:opacity-20 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] z-20">
+                className="absolute top-1/2 -translate-y-1/2 right-2.5 px-6 py-2.5 bg-silver text-black font-black rounded-xl hover:bg-white disabled:opacity-20 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] z-20 h-auto">
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><span className="hidden sm:inline">Initialize</span><Sparkles className="w-3 h-3" /></>}
               </button>
             </form>
@@ -168,14 +168,16 @@ export default function Home() {
             <AnimatePresence>
               {(isLoading || logs.length > 0) && !result && (
                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
-                  className="w-full md:w-80 glass-panel rounded-2xl p-4 font-mono text-[10px] text-silver/60 flex flex-col gap-2 overflow-hidden border-white/5 h-[100px] md:h-auto">
-                  <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                  className="w-full md:w-80 glass-panel rounded-2xl p-4 font-mono text-[10px] text-silver/60 flex flex-col gap-2 overflow-hidden border-white/5 min-h-[120px] max-h-[160px]">
+                  <div className="flex items-center gap-2 border-b border-white/5 pb-2 shrink-0">
                     <Terminal className="w-3 h-3 text-silver/40" />
                     <span className="uppercase tracking-widest text-silver/30">Reasoning Engine</span>
                   </div>
-                  <div className="flex-1 overflow-auto custom-scrollbar">
+                  <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar break-words whitespace-pre-wrap">
                     {logs.map((log, i) => (
-                      <motion.div key={i} initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }}>{log}</motion.div>
+                      <motion.div key={i} initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} className="mb-1 leading-relaxed">
+                        {log}
+                      </motion.div>
                     ))}
                     <div ref={logEndRef} />
                   </div>
