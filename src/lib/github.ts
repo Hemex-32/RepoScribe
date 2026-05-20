@@ -3,6 +3,14 @@ export interface RepoFile {
   content: string;
 }
 
+export interface RepoMetadata {
+  language: string;
+  stars: number;
+  forks: number;
+  description: string;
+  size: number;
+}
+
 const IGNORED_EXTENSIONS = [
   '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.pdf', '.zip', '.tar.gz',
   '.woff', '.woff2', '.ttf', '.eot', '.mp4', '.mov', '.wav', '.mp3'
@@ -33,8 +41,28 @@ export function shouldIgnore(path: string): boolean {
   return false;
 }
 
+export async function fetchRepoMetadata(owner: string, repo: string): Promise<RepoMetadata> {
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}`;
+  const response = await fetch(apiUrl, {
+    headers: {
+      'Accept': 'application/vnd.github.v3+json',
+      'User-Agent': 'RepoScribe-App'
+    }
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch repository metadata');
+  
+  const data = await response.json();
+  return {
+    language: data.language || 'Unknown',
+    stars: data.stargazers_count,
+    forks: data.forks_count,
+    description: data.description || '',
+    size: data.size
+  };
+}
+
 export async function fetchRepoContents(owner: string, repo: string, path: string = '', depth: number = 0): Promise<RepoFile[]> {
-  // Limit depth to avoid massive repos and rate limits in prototype
   if (depth > 3) return [];
 
   const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
@@ -42,12 +70,12 @@ export async function fetchRepoContents(owner: string, repo: string, path: strin
   const response = await fetch(apiUrl, {
     headers: {
       'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'DocuGen-App'
+      'User-Agent': 'RepoScribe-App'
     }
   });
 
   if (!response.ok) {
-    if (response.status === 403) throw new Error('GitHub API rate limit exceeded. Please try again later.');
+    if (response.status === 403) throw new Error('GitHub API rate limit exceeded.');
     throw new Error(`Failed to fetch repo: ${response.statusText}`);
   }
 
@@ -56,7 +84,7 @@ export async function fetchRepoContents(owner: string, repo: string, path: strin
 
   for (const item of items) {
     if (shouldIgnore(item.path)) continue;
-    if (files.length > 50) break; // Limit total files for prototype
+    if (files.length > 50) break;
 
     if (item.type === 'file') {
       const fileResponse = await fetch(item.download_url);

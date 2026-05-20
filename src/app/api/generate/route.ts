@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { parseGithubUrl, fetchRepoContents } from '@/lib/github';
+import { parseGithubUrl, fetchRepoContents, fetchRepoMetadata } from '@/lib/github';
 import { generateDocumentation } from '@/lib/gemini';
 
 export async function POST(req: NextRequest) {
@@ -15,14 +15,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid GitHub URL' }, { status: 400 });
     }
 
-    // Step 1: Fetching
-    const files = await fetchRepoContents(repoInfo.owner, repoInfo.repo);
+    // Parallel fetch metadata and contents
+    const [metadata, files] = await Promise.all([
+      fetchRepoMetadata(repoInfo.owner, repoInfo.repo),
+      fetchRepoContents(repoInfo.owner, repoInfo.repo)
+    ]);
 
     if (files.length === 0) {
       return NextResponse.json({ error: 'Repository is empty or inaccessible' }, { status: 404 });
     }
 
-    // Step 2: AI Analysis & Generation
     const documentation = await generateDocumentation(files);
 
     return NextResponse.json({ 
@@ -30,6 +32,7 @@ export async function POST(req: NextRequest) {
       owner: repoInfo.owner, 
       repo: repoInfo.repo,
       fileCount: files.length,
+      metadata,
       ...documentation
     });
 
