@@ -22,7 +22,11 @@ export async function generateDocumentation(files: RepoFile[]) {
     
     You must provide your response in valid JSON format with the following keys:
     1. "readme": A professional Markdown README.md including Project Name, Description, Key Features, Tech Stack, and Installation/Usage instructions.
-    2. "architecture": A valid Mermaid.js graph TD or classDiagram representing the system architecture.
+    2. "architecture": A valid Mermaid.js graph TD or classDiagram. 
+       IMPORTANT: 
+       - DO NOT wrap the mermaid code in markdown code blocks (e.g., no \`\`\`mermaid).
+       - Ensure all node labels with special characters or spaces are wrapped in double quotes.
+       - The output must be a raw string that can be passed directly to the mermaid renderer.
     
     Codebase:
     ${codebaseContext}
