@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Github, FileText, Layout, Send, Loader2, Copy, Download, Check, ExternalLink } from 'lucide-react';
+import { Github, FileText, Layout, Send, Loader2, Copy, Download, Check, ExternalLink, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import Mermaid from '@/components/Mermaid';
 
@@ -18,7 +18,7 @@ export default function Home() {
     if (!url) return;
     
     setIsLoading(true);
-    setStatus('Fetching codebase and generating documentation with AI...');
+    setStatus('Analyzing codebase & mapping architecture...');
     setResult(null);
 
     try {
@@ -63,148 +63,191 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen p-6 bg-background text-foreground flex flex-col items-center">
-      <div className={`w-full max-w-5xl space-y-8 transition-all duration-1000 ${result ? 'mt-8' : 'mt-20 flex flex-col items-center text-center'}`}>
-        {/* Header */}
-        <div className={`space-y-4 ${result ? 'text-left' : 'text-center'}`}>
+    <main className="min-h-screen mesh-gradient text-foreground flex flex-col items-center px-4 md:px-6 overflow-x-hidden">
+      {/* Background Decorative Elements */}
+      <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-silver/5 blur-[120px] rounded-full pointer-events-none -z-10" />
+      <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-obsidian/20 blur-[120px] rounded-full pointer-events-none -z-10" />
+
+      <div className={`w-full max-w-5xl space-y-12 transition-all duration-1000 ${result ? 'mt-8' : 'mt-24 flex flex-col items-center text-center'}`}>
+        
+        {/* Header Section */}
+        <div className={`space-y-6 ${result ? 'text-left' : 'text-center'}`}>
           <div className={`flex ${result ? 'justify-start' : 'justify-center'}`}>
-            <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
-              <FileText className="w-10 h-10 text-white" />
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-silver/20 to-transparent blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+              <div className="relative p-4 glass-panel rounded-3xl animate-float">
+                <FileText className="w-12 h-12 text-silver" />
+              </div>
             </div>
           </div>
-          <h1 className="text-4xl font-black tracking-tighter uppercase italic">
-            Repo<span className="text-foreground/40 font-light not-italic">Scribe</span>
-          </h1>
-          {!result && (
-            <p className="text-lg text-white/50 max-w-lg mx-auto leading-relaxed">
-              AI-driven codebase documentation and visual architecture mapping.
-            </p>
-          )}
+          
+          <div className="space-y-2">
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-none">
+              <span className="silver-text">Repo</span>
+              <span className="text-white/20 font-light not-italic">Scribe</span>
+            </h1>
+            {!result && (
+              <p className="text-lg md:text-xl text-white/40 max-w-xl mx-auto leading-relaxed font-light">
+                Elevating source code into <span className="text-white font-medium">professional documentation</span> and visual architecture maps.
+              </p>
+            )}
+          </div>
         </div>
 
-        {/* Input Form */}
-        <div className={`w-full ${result ? 'max-w-xl' : 'max-w-2xl'}`}>
+        {/* Action Section */}
+        <div className={`w-full transition-all duration-700 ${result ? 'max-w-xl' : 'max-w-2xl'}`}>
           <form onSubmit={handleGenerate} className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
               <Github className="h-5 w-5 text-white/20 group-focus-within:text-white transition-colors" />
             </div>
             <input
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="github.com/username/repo"
-              className="block w-full pl-12 pr-32 py-4 bg-white/[0.03] border border-white/10 rounded-xl focus:border-white/40 focus:bg-white/[0.05] outline-none transition-all text-base placeholder:text-white/20"
+              placeholder="github.com/username/repository"
+              className="block w-full pl-14 pr-36 py-5 bg-white/[0.02] border border-white/10 rounded-2xl focus:border-white/30 focus:bg-white/[0.04] outline-none transition-all text-base placeholder:text-white/10 glass-panel"
             />
             <button
               type="submit"
               disabled={isLoading || !url}
-              className="absolute inset-y-2 right-2 px-6 bg-white text-black font-black rounded-lg hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-xs uppercase tracking-widest"
+              className="absolute inset-y-2.5 right-2.5 px-8 bg-silver text-black font-black rounded-xl hover:bg-white disabled:opacity-20 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-[10px] uppercase tracking-[0.2em]"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  <span>Scribe</span>
-                  <Send className="w-3 h-3" />
+                  <span>Initialize</span>
+                  <Sparkles className="w-3 h-3" />
                 </>
               )}
             </button>
           </form>
 
           {status && !result && (
-            <p className={`mt-6 text-[10px] uppercase tracking-[0.2em] font-bold ${status.startsWith('Error') ? 'text-red-500' : 'text-white/40 animate-pulse'}`}>
-              {status}
-            </p>
+            <div className="mt-8 flex flex-col items-center gap-3">
+              <div className="h-1 w-12 bg-white/10 rounded-full overflow-hidden">
+                <div className="h-full bg-silver animate-progress w-1/2" />
+              </div>
+              <p className={`text-[10px] uppercase tracking-[0.3em] font-bold ${status.startsWith('Error') ? 'text-red-500' : 'text-white/30'}`}>
+                {status}
+              </p>
+            </div>
           )}
         </div>
 
-        {/* Results Area */}
+        {/* Display Section */}
         {result && (
-          <div className="w-full space-y-6 animate-in">
+          <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
             {/* Control Bar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-5 glass-panel rounded-[2.5rem]">
+              <div className="flex items-center gap-3 p-1.5 bg-black/40 rounded-2xl border border-white/5">
                 <button
                   onClick={() => setActiveTab('readme')}
-                  className={`px-6 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'readme' ? 'bg-white text-black' : 'text-white/40 hover:text-white'}`}
+                  className={`px-8 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all ${activeTab === 'readme' ? 'bg-silver text-black shadow-lg' : 'text-white/40 hover:text-white'}`}
                 >
-                  README
+                  Project Spec
                 </button>
                 <button
                   onClick={() => setActiveTab('architecture')}
-                  className={`px-6 py-2 rounded-lg font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'architecture' ? 'bg-white text-black' : 'text-white/40 hover:text-white'}`}
+                  className={`px-8 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all ${activeTab === 'architecture' ? 'bg-silver text-black shadow-lg' : 'text-white/40 hover:text-white'}`}
                 >
-                  Architecture
+                  System Map
                 </button>
               </div>
               
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4 px-2">
                 <button
                   onClick={handleCopy}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors flex items-center gap-2 text-[10px] uppercase tracking-tighter font-bold text-white/60"
-                  title="Copy to clipboard"
+                  className="p-3 hover:bg-white/5 rounded-xl transition-all flex items-center gap-3 text-[10px] uppercase tracking-widest font-bold text-white/50 hover:text-white"
                 >
-                  {isCopied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4" />}
-                  <span>{isCopied ? 'Copied' : 'Copy'}</span>
+                  {isCopied ? <Check className="w-4 h-4 text-silver" /> : <Copy className="w-4 h-4" />}
+                  <span className="hidden sm:inline">{isCopied ? 'Stored' : 'Copy'}</span>
                 </button>
                 <button
                   onClick={handleDownload}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors flex items-center gap-2 text-[10px] uppercase tracking-tighter font-bold text-white/60"
-                  title="Download .md"
+                  className="p-3 hover:bg-white/5 rounded-xl transition-all flex items-center gap-3 text-[10px] uppercase tracking-widest font-bold text-white/50 hover:text-white"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Export</span>
+                  <span className="hidden sm:inline">Export</span>
                 </button>
-                <div className="w-px h-4 bg-white/10 mx-1" />
+                <div className="w-px h-6 bg-white/10 mx-2" />
                 <a
                   href={`https://github.com/${result.owner}/${result.repo}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors flex items-center gap-2 text-[10px] uppercase tracking-tighter font-bold text-white"
+                  className="p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all flex items-center gap-3 text-[10px] uppercase tracking-widest font-bold text-white"
                 >
-                  <ExternalLink className="w-4 h-4" />
-                  <span>Repo</span>
+                  <Github className="w-4 h-4" />
+                  <span className="hidden sm:inline">Source</span>
+                  <ExternalLink className="w-3 h-3 opacity-30" />
                 </a>
               </div>
             </div>
 
-            {/* Content Display */}
-            <div className="min-h-[600px] p-10 bg-white/[0.02] border border-white/5 rounded-3xl overflow-auto shadow-2xl">
-              {activeTab === 'readme' ? (
-                <div className="prose prose-invert max-w-none prose-pre:bg-white/[0.03] prose-pre:border prose-pre:border-white/5 prose-headings:font-black prose-headings:tracking-tighter prose-headings:uppercase prose-p:text-white/70 prose-accent">
-                  <ReactMarkdown>{result.readme}</ReactMarkdown>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  <h3 className="text-xs font-black uppercase tracking-[0.3em] text-white/30 mb-8">System Architecture Map</h3>
-                  <Mermaid chart={result.architecture} />
-                </div>
-              )}
+            {/* Main Content Area */}
+            <div className="min-h-[700px] glass-panel rounded-[3rem] overflow-hidden relative group">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/[0.01] to-transparent pointer-events-none" />
+              <div className="p-8 md:p-16 h-full overflow-auto relative z-10 custom-scrollbar">
+                {activeTab === 'readme' ? (
+                  <div className="prose prose-invert max-w-none 
+                    prose-pre:bg-black/50 prose-pre:backdrop-blur-md prose-pre:border prose-pre:border-white/5 prose-pre:rounded-2xl
+                    prose-headings:silver-text prose-headings:font-black prose-headings:tracking-tighter prose-headings:uppercase
+                    prose-p:text-white/60 prose-p:leading-relaxed prose-strong:text-white
+                    prose-a:text-silver hover:prose-a:text-white transition-colors">
+                    <ReactMarkdown>{result.readme}</ReactMarkdown>
+                  </div>
+                ) : (
+                  <div className="space-y-12 animate-in fade-in duration-700">
+                    <div className="flex items-center gap-4">
+                      <div className="h-px flex-1 bg-white/10" />
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 whitespace-nowrap">Core Architecture Graph</h3>
+                      <div className="h-px flex-1 bg-white/10" />
+                    </div>
+                    <div className="bg-black/20 p-8 rounded-[2rem] border border-white/5">
+                      <Mermaid chart={result.architecture} />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
 
-        {/* Initial Features Preview */}
+        {/* Landing Features */}
         {!result && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-12 w-full max-w-3xl">
-            <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl text-left space-y-4 hover:border-white/20 transition-all group">
-              <FileText className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-              <h3 className="font-black text-xs uppercase tracking-widest">Documentation</h3>
-              <p className="text-sm text-white/40 leading-relaxed">Comprehensive technical READMEs synthesized from your project structure and source logic.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-16 w-full max-w-4xl px-4">
+            <div className="p-10 glass-panel rounded-[2.5rem] text-left space-y-6 hover:border-white/20 transition-all group relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Sparkles className="w-24 h-24 text-white" />
+              </div>
+              <div className="p-4 bg-white/5 w-fit rounded-2xl border border-white/10 group-hover:scale-110 transition-transform duration-500">
+                <FileText className="w-8 h-8 text-silver" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-silver">Intelligent Analysis</h3>
+                <p className="text-base text-white/30 leading-relaxed font-light">Deep synthesis of your source code into high-fidelity technical specifications.</p>
+              </div>
             </div>
-            <div className="p-8 bg-white/[0.02] border border-white/5 rounded-3xl text-left space-y-4 hover:border-white/20 transition-all group">
-              <Layout className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-              <h3 className="font-black text-xs uppercase tracking-widest">Architecture</h3>
-              <p className="text-sm text-white/40 leading-relaxed">Live visual mapping of component dependencies and data flow using Mermaid.js integration.</p>
+            
+            <div className="p-10 glass-panel rounded-[2.5rem] text-left space-y-6 hover:border-white/20 transition-all group relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Layout className="w-24 h-24 text-white" />
+              </div>
+              <div className="p-4 bg-white/5 w-fit rounded-2xl border border-white/10 group-hover:scale-110 transition-transform duration-500">
+                <Layout className="w-8 h-8 text-silver" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-black text-[10px] uppercase tracking-[0.3em] text-silver">Visual Mapping</h3>
+                <p className="text-base text-white/30 leading-relaxed font-light">Live architectural rendering of dependencies and data flow through the system.</p>
+              </div>
             </div>
           </div>
         )}
       </div>
 
-      <footer className="mt-auto py-12 text-foreground/40 text-sm">
-        Built for developers who value their time.
+      <footer className="mt-auto py-16 text-white/20 text-[10px] uppercase tracking-[0.3em] font-bold">
+        DocuGen Engine &bull; RepoScribe UI &bull; 2026
       </footer>
     </main>
   );
 }
-

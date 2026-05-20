@@ -9,7 +9,7 @@ export async function generateDocumentation(files: RepoFile[]) {
   }
 
   const model = genAI.getGenerativeModel({ 
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-flash",
   });
 
   const codebaseContext = files
@@ -28,19 +28,44 @@ export async function generateDocumentation(files: RepoFile[]) {
     ${codebaseContext}
   `;
 
-  const result = await model.generateContent({
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    generationConfig: {
-      responseMimeType: "application/json",
-    },
-  });
-  const response = await result.response;
-  const text = response.text();
-  
-  try {
-    return JSON.parse(text);
-  } catch (e) {
-    console.error("Failed to parse Gemini response as JSON:", text);
-    throw new Error("AI returned invalid data format. Please try again.");
+  // Retry logic for 429 errors
+  const maxRetries = 3;
+  let retryCount = 0;
+  let delay = 10000; // Start with 10 seconds (free tier needs more time)
+
+  while (retryCount <= maxRetries) {
+    try {
+      const result = await model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+          temperature: 0.1, // Lower temperature for more stable JSON
+        },
+      });
+      const response = await result.response;
+      const text = response.text();
+      
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        console.error("Failed to parse Gemini response as JSON:", text);
+        throw new Error("AI returned invalid data format. Please try again.");
+      }
+    } catch (error: any) {
+      const errorText = error.message || "";
+      const isQuotaError = errorText.includes('429') || errorText.toLowerCase().includes('quota');
+      
+      if (isQuotaError && retryCount < maxRetries) {
+        // If the error specifies a wait time, try to extract it, otherwise use backoff
+        console.log(`Quota exceeded. Retrying in ${delay/1000}s... (Attempt ${retryCount + 1}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        retryCount++;
+        delay *= 2; // Exponential backoff (10s, 20s, 40s)
+        continue;
+      }
+      
+      console.error("Gemini API Error:", error);
+      throw new Error(`Gemini API Error: ${errorText.slice(0, 100)}...`);
+    }
   }
 }
